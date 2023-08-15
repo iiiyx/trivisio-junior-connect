@@ -2,9 +2,27 @@ plugins {
     id 'com.android.application'
 }
 
+static def renameArtifact(variant) {
+    variant.outputs.each { output ->
+        def formattedDate = new Date().format('yyyyMMddHH')
+        output.outputFileName = "trivisio-junior-connect_${formattedDate}_${variant.buildType.name}.apk"
+    }
+}
+
 android {
     namespace 'com.trivisio.junior.connect'
     compileSdk 33
+
+    signingConfigs {
+        config {
+            keyAlias 'key0'
+            keyPassword 'password'
+            storeFile file('../keystore/android.jks')
+            storePassword 'password'
+        }
+    }
+
+    applicationVariants.configureEach { variant -> renameArtifact(variant) }
 
     defaultConfig {
         applicationId "com.trivisio.junior.connect"
@@ -12,14 +30,16 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources false
+            signingConfig signingConfigs.config
+        }
+        debug {
+            minifyEnabled false
         }
     }
     compileOptions {
