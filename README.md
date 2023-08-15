@@ -15,7 +15,7 @@ on Android devices.
 > [!IMPORTANT]
 > Your future app must establish BT connection using SPP UUID - the one that is used by the Junior device to receive text data: `00001101-0000-1000-8000-00805f9b34fb`, see the [BluetoothConnectService][3] for details
 
-[3]: https://github.com/iiiyx/trivisio-junior-connect/app/src/main/java/com/trivisio/junior/connect/BluetoothConnectService.java
+[3]: https://github.com/iiiyx/trivisio-junior-connect/blob/master/app/src/main/java/com/trivisio/junior/connect/BluetoothConnectService.java
 
 Sample App Functionality
 ------------
@@ -29,4 +29,4 @@ Sample App Functionality
 > [!IMPORTANT]
 > Junior device can show only 120 symbols on its screen, you need to send only the last 120 recognized symbols, so, a user will see continiously shifting set of text (a ticker). See [BluetoothConnectFragment.onTextSend()][4] for the implementation details.
 
-[4]: https://github.com/iiiyx/trivisio-junior-connect/app/src/main/java/com/trivisio/junior/connect/BluetoothConnectService.java#L380
+[4]: https://github.com/iiiyx/trivisio-junior-connect/blob/master/app/src/main/java/com/trivisio/junior/connect/BluetoothConnectFragment.java#L380
