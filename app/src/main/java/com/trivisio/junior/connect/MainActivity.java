@@ -31,6 +31,7 @@ public class MainActivity extends FragmentActivity {
     private boolean doubleBackToExitPressedOnce;
     private final Handler uiHandler = new Handler(Looper.getMainLooper());
     private Bundle mSavedInstanceState;
+    private BluetoothConnectFragment bluetoothConnectFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +68,8 @@ public class MainActivity extends FragmentActivity {
     private void continueInit() {
         if (mSavedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            BluetoothConnectFragment fragment = new BluetoothConnectFragment();
-            transaction.replace(R.id.sample_content_fragment, fragment);
+            bluetoothConnectFragment = new BluetoothConnectFragment();
+            transaction.replace(R.id.sample_content_fragment, bluetoothConnectFragment);
             transaction.commit();
         }
 
@@ -85,7 +86,7 @@ public class MainActivity extends FragmentActivity {
             getSupportFragmentManager().popBackStack();
         } else if (!doubleBackToExitPressedOnce) {
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Press BACK again to exit.", Toast.LENGTH_SHORT).show();
 
             uiHandler.postDelayed(new Runnable() {
 
@@ -95,6 +96,9 @@ public class MainActivity extends FragmentActivity {
                 }
             }, 2000);
         } else {
+            if (bluetoothConnectFragment != null) {
+                bluetoothConnectFragment.disconnectDevice();
+            }
             super.onBackPressed();
         }
     }

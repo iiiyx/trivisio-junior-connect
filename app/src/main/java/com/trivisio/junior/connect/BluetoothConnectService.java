@@ -193,6 +193,7 @@ public class BluetoothConnectService {
      */
     public synchronized void stop() {
         Log.d(TAG, "stop");
+        mState = STATE_NONE;
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -204,7 +205,6 @@ public class BluetoothConnectService {
             mConnectedThread = null;
         }
 
-        mState = STATE_NONE;
         // Update UI title
         updateUserInterfaceTitle();
     }
@@ -220,7 +220,9 @@ public class BluetoothConnectService {
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
         synchronized (this) {
-            if (mState != STATE_CONNECTED) return;
+            if (mState != STATE_CONNECTED) {
+                return;
+            }
             r = mConnectedThread;
         }
         // Perform the write unsynchronized
@@ -388,8 +390,10 @@ public class BluetoothConnectService {
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
-                    Log.e(TAG, "disconnected", e);
-                    connectionLost();
+                    if (mState == STATE_CONNECTED) {
+                        Log.e(TAG, "disconnected", e);
+                        connectionLost();
+                    }
                     break;
                 }
             }

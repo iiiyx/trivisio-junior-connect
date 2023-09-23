@@ -123,10 +123,11 @@ public class BluetoothConnectFragment extends Fragment {
         disconnectDevice();
     }
 
-    private void disconnectDevice() {
+    public void disconnectDevice() {
         if (mConnectService != null) {
             sendMessage("Waiting for message", true);
             mConnectService.stop();
+            oldValue = "";
         }
     }
 
@@ -281,6 +282,10 @@ public class BluetoothConnectFragment extends Fragment {
                         case BluetoothConnectService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             mConnectButton.setEnabled(true);
+                            mConnectButton.setVisibility(View.VISIBLE);
+                            mTextInput.setVisibility(View.GONE);
+                            mSendButton.setVisibility(View.GONE);
+                            mDisconnectButton.setVisibility(View.GONE);
                             break;
                     }
                     break;
@@ -322,6 +327,7 @@ public class BluetoothConnectFragment extends Fragment {
                     mDisconnectButton.setVisibility(View.GONE);
                     mConnectButton.setVisibility(View.VISIBLE);
                     mConnectButton.setEnabled(true);
+                    oldValue = "";
                     break;
             }
         }
