@@ -23,6 +23,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -105,8 +106,9 @@ public class BluetoothConnectFragment extends Fragment {
         // If BT is not on, request that it be enabled.
         // setupConnectService() will then be called during onActivityResult
         if (!mBluetoothAdapter.isEnabled()) {
-            if (ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    (ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)) {
                 return;
             }
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -182,9 +184,10 @@ public class BluetoothConnectFragment extends Fragment {
      * Set up the UI and background operations for connection.
      */
     private void setupConnectService() {
-        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() &&
-                ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()
+                && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                    || (ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED))) {
             mConnectButton.performClick();
         }
         // Initialize the array adapter for the conversation thread
@@ -374,9 +377,6 @@ public class BluetoothConnectFragment extends Fragment {
         String address = extras.getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        if (ActivityCompat.checkSelfPermission(BluetoothConnectFragment.this.requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("Device UUIDs: ", String.valueOf(device.fetchUuidsWithSdp()));
-        }
         // Attempt to connect to the device
         mConnectService.connect(device);
     }
