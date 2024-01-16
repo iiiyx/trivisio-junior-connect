@@ -27,6 +27,6 @@ Sample App Functionality
 5. The connected Junior device will show you the last 120 symbols of the sent text.
 
 > [!IMPORTANT]
-> Junior device can show only 120 symbols on its screen, you need to send only the last 120 recognized symbols, so, a user will see a continuously shifting set of text (a ticker). See [BluetoothConnectFragment.formatText()][4] for the implementation details.
+> Junior device can show only 120 symbols on its screen: 6 lines by 20 symbols. You need to send only the last 120 recognized symbols, so, a user will see a continuously shifting set of text (a ticker). See [BluetoothConnectFragment.formatText()][4] for the implementation details.
 
 [4]: https://github.com/iiiyx/trivisio-junior-connect/blob/master/app/src/main/java/com/trivisio/junior/connect/BluetoothConnectFragment.java#L402
