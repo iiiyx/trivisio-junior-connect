@@ -36,12 +36,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -80,7 +83,6 @@ public class BluetoothConnectFragment extends Fragment {
     private BluetoothConnectService mConnectService = null;
 
     private String oldValue;
-    private final static int CAPACITY = 120;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -384,7 +386,7 @@ public class BluetoothConnectFragment extends Fragment {
     /****************************************** UI Widget Callbacks *******************************/
 
     private void onTextSend(String text) {
-        String value = text.replaceAll("\n", " ").trim();
+        String value = text.replaceAll("\\s+", " ").trim();
         if (value.equals(oldValue)) {
             return;
         }
@@ -394,14 +396,50 @@ public class BluetoothConnectFragment extends Fragment {
             return;
         }
 
-        int c = value.length() - 1;
-        StringBuilder sb = new StringBuilder(CAPACITY);
-        for (int i = 0; i < CAPACITY && c >= 0; i++) {
-            sb.append(value.charAt(c));
-            c--;
+        sendMessage(formatText(value));
+    }
+
+    private static String formatText(String inputText) {
+        String[] words = inputText.trim().split("\\s+");
+        int lineLength = 20;
+        int numberOfLines = 6;
+
+        String[] formattedReversedLines = new String[numberOfLines];
+
+        int wordIndex = words.length - 1; // Start from the end of the words array
+
+        int i = 0;
+        while (i < numberOfLines && wordIndex >= 0) {
+            StringBuilder lineBuilder = new StringBuilder();
+
+            // Build a line with up to 20 characters
+            while (wordIndex >= 0 && lineBuilder.length() + words[wordIndex].length() <= lineLength) {
+                String word = words[wordIndex];
+                if (word != null && word.length() > 0) {
+                    lineBuilder.insert(0, words[wordIndex] + " ");
+                }
+                wordIndex--;
+            }
+
+            // Trim any extra whitespace at the end
+            String lineText = lineBuilder.toString().trim();
+            if (lineText.length() > 0) {
+                formattedReversedLines[i] = lineText;
+                i++;
+            }
         }
 
-        value = sb.reverse().toString();
-        sendMessage(value);
+        List<String> lines = Arrays.asList(formattedReversedLines).stream().filter(s -> s != null && s.length() != 0).collect(Collectors.toList());
+        Collections.reverse(lines);
+
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < lines.size(); j++) {
+            String line = lines.get(j);
+            sb.append(line);
+            if(j < lines.size() - 1 && line.length() < lineLength) {
+                sb.append("\n");
+            }
+        }
+        return sb.toString().trim();
     }
 }
